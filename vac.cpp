@@ -32,7 +32,7 @@ using BSecureFn = bool(__cdecl*)();
 using GetSteamIdFn = uint64_t(__cdecl*)();
 
 unsigned long g_next_check;
-bool g_logged_on;
+bool g_logged_on, g_waiting_logged;
 
 // Steam calls before the game server exists return false/0; guarded anyway, as they run inside the game's tick.
 bool TrySecure(BSecureFn fn, bool& secure)
@@ -96,11 +96,17 @@ void CheckVac(unsigned long now_ms)
         Log("VAC: Steam reports this server as VAC secure; stopping it");
         TerminateProcess(GetCurrentProcess(), 0xDEAD0AC);
     }
+    // A CSteamID is universe (8 bits), account type (4), instance (20), account number (32). Before Steam answers,
+    // the server reports an anonymous game-server ID with account number 0; the number comes with the logon.
     if (!g_logged_on && get_id) {
         uint64_t id = 0;
-        if (TrySteamId(get_id, id) && id != 0) {
+        if (TrySteamId(get_id, id) && (id & 0xFFFFFFFFull) != 0) {
             g_logged_on = true;
-            Log("VAC: game server logged on to Steam as %llu, not secure", static_cast<unsigned long long>(id));
+            Log("VAC: game server logged on to Steam as %llu (account type %u), not secure",
+                static_cast<unsigned long long>(id), static_cast<unsigned>((id >> 52) & 0xF));
+        } else if (!g_waiting_logged && id != 0) {
+            g_waiting_logged = true;
+            Log("VAC: game server waiting for Steam to log it on (id %llu so far)", static_cast<unsigned long long>(id));
         }
     }
 }

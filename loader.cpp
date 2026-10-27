@@ -40,7 +40,7 @@ struct Build {
     uintptr_t tick_impl;  // what the engine's vtable holds there in this build: the build check
     uintptr_t gobjects, gnames, gworld;
 };
-// Found by reversing (re/README.md): the main loop (0x00B2CA7A) calls GEngine->vtable[0xFC](DeltaSeconds) right
+// Found by reversing (HomefrontSDK/Tools/README.md): the main loop (0x00B2CA7A) calls GEngine->vtable[0xFC](DeltaSeconds) right
 // after the frame-time helper; for GCGameEngine that is 0x00B8D370 (ret 4).
 const Build kBuilds[] = {
     {"HFDedicated.exe", 0x018D10A4, 0xFC, 0x00B8D370, 0x018BBD6C, 0x018BBD90, 0x018D5078},  // server, 2011-08-10

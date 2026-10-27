@@ -7,9 +7,9 @@ everything that has to happen inside the server before mods can run, then hands 
 A server install with mods is just:
 
 ```
-server\Binaries\msimg32.dll                     this loader
-server\Binaries\HomefrontSDK\HomefrontSDK.dll   the SDK (+ .runtimeconfig.json, .deps.json, .pdb)
-server\Binaries\HomefrontSDK\Mods\<Mod>\        the mods
+Homefront Dedicated Server\Binaries\msimg32.dll                     this loader
+Homefront Dedicated Server\Binaries\HomefrontSDK\HomefrontSDK.dll   the SDK (+ .runtimeconfig.json, .deps.json, .pdb)
+Homefront Dedicated Server\Binaries\HomefrontSDK\Mods\<Mod>\        the mods
 ```
 
 The server exe stays stock, and nothing else is patched or replaced. Needs the 32-bit (x86) .NET 10 runtime.
@@ -45,7 +45,7 @@ The native API it hands over (`native_api.cpp`):
 
 For an exe it doesn't know, it only forwards msimg32.
 
-Log: `server\Binaries\HomefrontSDK\HomefrontSDK.log`, shared with the SDK.
+Log: `Homefront Dedicated Server\Binaries\HomefrontSDK\HomefrontSDK.log`, shared with the SDK.
 
 ## Build
 
@@ -64,5 +64,5 @@ HomefrontSDK\Build.ps1 -Install       builds it with the rest and installs it (s
 ## Supporting another build
 
 Add a row to `kBuilds` in `loader.cpp`: exe name, `GEngine`, the `Tick` vtable offset and what that slot holds, and
-GObjects/GNames/GWorld (from `re/README.md`). Find the build's `eServerMode` code for `vac.cpp`: search for
+GObjects/GNames/GWorld (from `HomefrontSDK/Tools/README.md`). Find the build's `eServerMode` code for `vac.cpp`: search for
 `SteamGameServer_Init`'s caller. The SDK's bindings must be regenerated for it too.
